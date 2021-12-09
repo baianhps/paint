@@ -1,7 +1,6 @@
 * {
     padding: 0;
     margin: 0;
-    box-sizing: border-box;
 }
 
 body {
@@ -11,6 +10,7 @@ body {
 
 .toolbar {
     width: 600px;
+    border: 3px solid #444;
     display: flex;
     justify-content: center;
     background-color: #444;
@@ -40,7 +40,5 @@ body {
 }
 
 #myCanvas {
-    width: 600px;
-    height: 600px;
     border: 3px solid #000;
 }

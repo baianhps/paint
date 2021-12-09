@@ -11,28 +11,25 @@
 </head>
 
 <body>
-
-    <div class="toolbar">
-        <a href="#" class="selected" id="pointer">
-            <i class="fas fa-mouse-pointer"></i></a>
-        <a href="#" id="pencil">
-            <span class="material-icons">create</span></a>
-        <a href="#" id="line">
-            <span class="material-icons">horizontal_rule</span></a>
-        <a href="#" id="rectangle">
-            <span class="material-icons">crop_5_4</span></a>
-        <a href="#" id="circle">
-            <span class="material-icons">radio_button_unchecked</span></i></a>
-        <a href="#" id="eraser">
-            <i class="fas fa-eraser"></i></a>
-        <a href="#" id="image">
-            <span class="material-icons">image</span></a>
-        <a href="#" id="download">
-            <span class="material-icons">download</span></a>
+    <div class="warp">
+        <div class="toolbar">
+            <a href="#" class="selected" id="pointer"><i class="fas fa-mouse-pointer"></i></a>
+            <!-- <a href="#" id="pencil"><span class="material-icons">create</span></a> -->
+            <a href="#" id="line"><span class="material-icons">horizontal_rule</span></a>
+            <a href="#" id="rectangle"><span class="material-icons">crop_5_4</span></a>
+            <a href="#" id="circle"><span class="material-icons">radio_button_unchecked</span></i></a>
+            <a href="#" id="eraser"><i class="fas fa-eraser"></i></a>
+            <a href="#" id="image"><span class="material-icons">image</span></a>
+            <a href="#" id="download"><span class="material-icons">download</span></a>
+        </div>
+        <canvas id="myCanvas" width="600" height="600"></canvas>
+        <p id="pos"></p>
     </div>
-    <canvas id="myCanvas"></canvas>
-
-    <p id="pos"></p>
+    <div class="warp">
+        <select id="layer" size="20" style="width: 25em;">
+            <option value="0">123</option>
+        </select>
+    </div>
 </body>
 <script src="paint.js"></script>
 

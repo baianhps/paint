@@ -7,6 +7,11 @@ class Point {
     toString() { return this.x + ' , ' + this.y }
 }
 
+class Shape {
+    constructor(x, y) {
+        this.start=new Point(x,y);
+    }
+}
 let canvas = document.getElementById('myCanvas');
 let ctx = canvas.getContext('2d');
 let show = document.getElementById('pos');
@@ -14,8 +19,11 @@ let currentCursorPosition = new Point(0, 0);
 let selected = 'pointer';
 
 
-canvas.addEventListener('mousemove', (e) => {
-    currentCursorPosition.update(e.clientX, e.clientY);
+canvas.addEventListener('click', (event) => {
+        console.log(event.region)
+})
+canvas.addEventListener('mousemove', (event) => {
+    currentCursorPosition.update(event.clientX, event.clientY);
     show.innerHTML = currentCursorPosition.toString();
 })
 
@@ -37,3 +45,13 @@ document.querySelectorAll('.toolbar>a').forEach((element) => {
 
     }
 });
+
+ctx.strokeStyle = 'red';
+ctx.lineWidth = 52;
+
+// draw a red line
+ctx.beginPath();
+ctx.moveTo(100, 100);
+ctx.lineTo(200, 100);
+ctx.stroke();
+ctx.fillRect(100, 100, 100, 200)
