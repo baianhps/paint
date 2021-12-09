@@ -1,0 +1,46 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: fit-content;
+    margin: auto;
+}
+
+.toolbar {
+    width: 600px;
+    display: flex;
+    justify-content: center;
+    background-color: #444;
+}
+.toolbar a:hover{
+    background-color: #000;
+}
+.selected{
+    background-color: #000;
+}
+.toolbar a * {
+    color: #fff;
+    line-height: 1.5;
+    width: 4rem;
+    vertical-align: middle;
+    text-align: center;
+    
+}
+
+.fas {
+    transform:translateY(3px);
+    font-size: 19px;
+}
+
+.material-icons {
+    font-size: 24px;
+}
+
+#myCanvas {
+    width: 600px;
+    height: 600px;
+    border: 3px solid #000;
+}
