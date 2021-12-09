@@ -31,7 +31,7 @@ body {
 }
 
 .fas {
-    transform:translateY(3px);
+    transform:translate(0,3px);
     font-size: 19px;
 }
 
