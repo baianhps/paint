@@ -174,7 +174,6 @@ document.getElementById('layer-down').addEventListener('click', (e) => {
 })
 document.getElementById('layer-del').addEventListener('click', (e) => {
     let layer_selected = Number(layer.value);
-    console.log(svg.children[layer_selected])
     svg.children[layer_selected].remove();
     refreshLayerList()
 });
