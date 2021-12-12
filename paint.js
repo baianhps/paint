@@ -111,17 +111,7 @@ function mouseMoveHandler(e) {
 
 function mouseUpHandler(e) {
     mouseIsDown = false;
-    document.querySelectorAll('#layer>option').forEach(i => {
-        i.remove()
-    });
-    // document.querySelectorAll('line,rect,ellipse,circle,text,image').forEach((i,index) => {
-    document.querySelector('svg').childNodes.forEach((i, index) => {
-        let o = document.createElement('option')
-        o.innerText = i.tagName
-        o.setAttribute('value', index);
-        layer.appendChild(o)
-    });
-
+   
 }
 
 function getBorderColor() {
