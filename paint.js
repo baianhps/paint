@@ -10,65 +10,59 @@ let cursorX = (e) => e.clientX - bound.left;
 let cursorY = (e) => e.clientY - bound.top;
 let show = document.getElementById('pos');
 let cursorPosition = new Point(0, 0);
-let selected = 'pointer';
+let mouseDownLoc = new Point(0, 0);
+let selected = document.querySelector('.selected').id;
 let mouseIsDown = false;
-let mouseDownX, mousedownY;
-let drawing;
+let drawing = undefined;
 let layer = document.getElementById('layer');
 
 
-function mouseDownHandler(e) {
+function mouseDown(e) {
     mouseIsDown = true;
-    mouseDownX = cursorX(e), mousedownY = cursorY(e);
+    mouseDownLoc.update(cursorX(e), cursorY(e));
     if (selected === 'line') {
         drawing = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        drawing.setAttribute("x1", mouseDownX);
-        drawing.setAttribute("y1", mousedownY);
-        drawing.setAttribute("x2", mouseDownX);
-        drawing.setAttribute("y2", mousedownY);
-        drawing.setAttribute("stroke", getBorderColor());
-        drawing.setAttribute("stroke-width", getBorderWidth());
+        drawing.setAttribute("x1", mouseDownLoc.x);
+        drawing.setAttribute("y1", mouseDownLoc.y);
+        drawing.setAttribute("x2", mouseDownLoc.x);
+        drawing.setAttribute("y2", mouseDownLoc.y);
+        setBorder();
         svg.appendChild(drawing)
     } else if (selected === 'rectangle') {
         drawing = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-        drawing.setAttribute("x", mouseDownX);
-        drawing.setAttribute("y", mousedownY);
+        drawing.setAttribute("x", mouseDownLoc.x);
+        drawing.setAttribute("y", mouseDownLoc.y);
         drawing.setAttribute("width", 0);
         drawing.setAttribute("height", 0);
-        drawing.setAttribute("stroke", getBorderColor());
-        drawing.setAttribute("stroke-width", getBorderWidth());
-        drawing.setAttribute("fill", getFillColor());
+        setBorder();
+        setFill();
         svg.appendChild(drawing)
     } else if (selected === 'ellipse') {
         drawing = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
-        drawing.setAttribute("cx", mouseDownX);
-        drawing.setAttribute("cy", mousedownY);
-        drawing.setAttribute("stroke", getBorderColor());
-        drawing.setAttribute("stroke-width", getBorderWidth());
-        drawing.setAttribute("fill", getFillColor());
+        drawing.setAttribute("cx", mouseDownLoc.x);
+        drawing.setAttribute("cy", mouseDownLoc.y);
+        setBorder();
+        setFill();
         svg.appendChild(drawing)
     } else if (selected === 'circle') {
         drawing = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        drawing.setAttribute("cx", mouseDownX);
-        drawing.setAttribute("cy", mousedownY);
-        drawing.setAttribute("stroke", getBorderColor());
-        drawing.setAttribute("stroke-width", getBorderWidth());
-        drawing.setAttribute("fill", getFillColor());
+        drawing.setAttribute("cx", mouseDownLoc.x);
+        drawing.setAttribute("cy", mouseDownLoc.y);
+        setBorder();
+        setFill();
         svg.appendChild(drawing)
     } else if (selected === 'text') {
         drawing = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        drawing.setAttribute("x", mouseDownX);
-        drawing.setAttribute("y", mousedownY + getTextSize());
-        drawing.setAttribute("font-size", getTextSizeString());
-        drawing.setAttribute("stroke", getBorderColor());
-        drawing.setAttribute("stroke-width", getBorderWidth());
-        drawing.setAttribute("fill", getFillColor());
-        drawing.innerHTML = getTextContent()
+        drawing.setAttribute("x", mouseDownLoc.x);
+        drawing.setAttribute("y", mouseDownLoc.y + getTextSize());
+        setBorder();
+        setFill();
+        setText();
         svg.appendChild(drawing)
     }
 }
 
-function mouseMoveHandler(e) {
+function mouseMove(e) {
     cursorPosition.update(cursorX(e), cursorY(e));
     show.innerHTML = cursorPosition.toString();
     if (mouseIsDown) {
@@ -76,36 +70,56 @@ function mouseMoveHandler(e) {
             drawing.setAttribute("x2", cursorX(e));
             drawing.setAttribute("y2", cursorY(e));
         } else if (selected === 'rectangle') {
-            let width = cursorX(e) - mouseDownX, height = cursorY(e) - mousedownY;
+            let width = cursorX(e) - mouseDownLoc.x, height = cursorY(e) - mouseDownLoc.y;
             if (width >= 0) {
-                drawing.setAttribute("x", mouseDownX);
+                drawing.setAttribute("x", mouseDownLoc.x);
                 drawing.setAttribute("width", width);
             } else {
                 drawing.setAttribute("x", cursorX(e));
                 drawing.setAttribute("width", Math.abs(width));
             }
             if (height >= 0) {
-                drawing.setAttribute("y", mousedownY);
+                drawing.setAttribute("y", mouseDownLoc.y);
                 drawing.setAttribute("height", height);
             } else {
                 drawing.setAttribute("y", cursorY(e));
                 drawing.setAttribute("height", Math.abs(height));
             }
         } else if (selected === 'ellipse') {
-            drawing.setAttribute("cx", (mouseDownX + cursorX(e)) / 2);
-            drawing.setAttribute("cy", (mousedownY + cursorY(e)) / 2);
-            drawing.setAttribute("rx", Math.abs(cursorX(e) - mouseDownX) / 2);
-            drawing.setAttribute("ry", Math.abs(cursorY(e) - mousedownY) / 2);
+            drawing.setAttribute("cx", (mouseDownLoc.x + cursorX(e)) / 2);
+            drawing.setAttribute("cy", (mouseDownLoc.y + cursorY(e)) / 2);
+            drawing.setAttribute("rx", Math.abs(cursorX(e) - mouseDownLoc.x) / 2);
+            drawing.setAttribute("ry", Math.abs(cursorY(e) - mouseDownLoc.y) / 2);
         } else if (selected === 'circle') {
-            drawing.setAttribute("r", Math.hypot(cursorX(e) - mouseDownX, cursorY(e) - mousedownY));
-        } else if (selected === 'text') {
-
-
+            drawing.setAttribute("r", Math.hypot(cursorX(e) - mouseDownLoc.x, cursorY(e) - mouseDownLoc.y));
+        } else if (selected === 'pointer') {
+            if (typeof (drawing) !== 'undefined') {
+                if (drawing.tagName === 'line') {
+                    let x1 = Number(drawing.getAttribute('x1')), x2 = Number(drawing.getAttribute('x2'));
+                    let y1 = Number(drawing.getAttribute('y1')), y2 = Number(drawing.getAttribute('y2'));
+                    if (x1 + e.movementX >= 0) {
+                        drawing.setAttribute('x1', x1 + e.movementX);
+                        drawing.setAttribute('x2', x2 + e.movementX);
+                    }
+                    if (y1 + e.movementY >= 0) {
+                        drawing.setAttribute('y1', y1 + e.movementY);
+                        drawing.setAttribute('y2', y2 + e.movementY);
+                    }
+                } else if (drawing.tagName === 'ellipse' || drawing.tagName === 'circle') {
+                    let cx = Number(drawing.getAttribute('cx')), cy = Number(drawing.getAttribute('cy'));
+                    if (cx + e.movementX >= 0) { drawing.setAttribute('cx', cx + e.movementX); }
+                    if (cy + e.movementY >= 0) { drawing.setAttribute('cy', cy + e.movementY); }
+                } else {
+                    let x = Number(drawing.getAttribute('x')), y = Number(drawing.getAttribute('y'));
+                    if (x + e.movementX >= 0) { drawing.setAttribute('x', x + e.movementX); }
+                    if (y + e.movementY >= 0) { drawing.setAttribute('y', y + e.movementY); }
+                }
+            }
         }
     }
 }
 
-function mouseUpHandler(e) {
+function mouseUp(e) {
     mouseIsDown = false;
     refreshLayerList();
 }
@@ -129,24 +143,27 @@ function getFillColor() {
     if (document.getElementById('no-fill').checked) { return 'transparent' }
     else { return document.getElementById('fill-picker').value; }
 }
-function getBorderWidth() {
-    return document.getElementById('border-width').value
-}
-function getTextContent() {
-    return document.getElementById('text-content').value
-}
-function getTextSize() {
-    return Number(document.getElementById('text-size').value)
-}
-function getTextSizeString() {
-    return getTextSize() + 'px'
-}
+function getBorderWidth() { return document.getElementById('border-width').value }
+function getTextContent() { return document.getElementById('text-content').value }
+function getTextSize() { return Number(document.getElementById('text-size').value) }
+function getTextSizeString() { return getTextSize() + 'px' }
 
+function setBorder(e) {
+    drawing.setAttribute("stroke", getBorderColor());
+    drawing.setAttribute("stroke-width", getBorderWidth());
 
+}
+function setFill(e) { drawing.setAttribute("fill", getFillColor()); }
+function setText(e) {
+    if (drawing.tagName === 'text') {
+        drawing.innerHTML = getTextContent();
+        drawing.setAttribute("font-size", getTextSizeString());
+    }
+}
 window.addEventListener('resize', (e) => { bound = svg.getBoundingClientRect(); })
-svg.addEventListener('mousedown', mouseDownHandler);
-svg.addEventListener('mousemove', mouseMoveHandler);
-svg.addEventListener('mouseup', mouseUpHandler);
+svg.addEventListener('mousedown', mouseDown);
+svg.addEventListener('mousemove', mouseMove);
+svg.addEventListener('mouseup', mouseUp);
 
 document.querySelectorAll('#tool-select>a').forEach((element) => {
     element.addEventListener('click', (event) => {
@@ -154,6 +171,12 @@ document.querySelectorAll('#tool-select>a').forEach((element) => {
         document.querySelector('.selected').classList.remove('selected');
         element.classList.add('selected');
     })
+});
+document.getElementById('border-picker').addEventListener('change', (e) => {
+    document.getElementById('border-hex').innerText = e.originalTarget.value.toUpperCase();
+});
+document.getElementById('fill-picker').addEventListener('change', (e) => {
+    document.getElementById('fill-hex').innerText = e.originalTarget.value.toUpperCase();
 });
 
 document.getElementById('layer-up').addEventListener('click', (e) => {
@@ -211,7 +234,7 @@ layer.addEventListener('change', (e) => {
         border_picker_button.value = stroke;
         border_width_input.value = dwaring.getAttribute('stroke-width')
     }
-    if (drawing.hasAttribute('fill')) {
+    if (drawing.tagName !== 'line') {
         let fill = dwaring.getAttribute('fill')
         if (fill === 'transparent') { no_fill_sel.click(); }
         else {
@@ -223,9 +246,12 @@ layer.addEventListener('change', (e) => {
 
 })
 
-document.getElementById('border-picker').addEventListener('change', (e) => {
-    document.getElementById('border-hex').innerText = e.originalTarget.value.toUpperCase();
-});
-document.getElementById('fill-picker').addEventListener('change', (e) => {
-    document.getElementById('fill-hex').innerText = e.originalTarget.value.toUpperCase();
-});
+document.querySelector('#text-content').addEventListener('change', setText)
+document.querySelector('#text-size').addEventListener('change', setText)
+document.querySelector('#no-border').addEventListener('click', setBorder);
+document.querySelector('#color-border').addEventListener('click', setBorder);
+document.querySelector('#border-picker').addEventListener('change', setBorder);
+document.querySelector('#border-width').addEventListener('change', setBorder);
+document.querySelector('#no-fill').addEventListener('click', setFill);
+document.querySelector('#color-fill').addEventListener('click', setFill);
+document.querySelector('#fill-picker').addEventListener('change', setFill);
