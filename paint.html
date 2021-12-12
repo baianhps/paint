@@ -16,20 +16,24 @@
 <body>
     <div class="row">
         <div class="col">
-            <div class="toolbar">
-                <a href="#" class="selected" id="pointer"><i class="fas fa-mouse-pointer"></i></a>
-                <a href="#" id="line"><span class="material-icons">horizontal_rule</span></a>
+            <div class="toolbar" id="tool-select">
+                <a href="#" id="pointer"><i class="fas fa-mouse-pointer"></i></a>
+                <a href="#" class="selected" id="line"><span class="material-icons">horizontal_rule</span></a>
                 <a href="#" id="rectangle"><span class="material-icons">crop_5_4</span></a>
                 <a href="#" id="ellipse"><span class="material-icons"
                         style="transform: scale(1.15,0.95);">radio_button_unchecked</span></i></a>
                 <a href="#" id="circle"><span class="material-icons">radio_button_unchecked</span></i></a>
                 <a href="#" id="text"><span class="material-icons">text_format</span></i></a>
-                <!-- <a href="#" id="eraser"><i class="fas fa-eraser"></i></a> -->
-                <a href="#" id="image"><span class="material-icons">image</span></a>
-                <!-- <a href="#" id="download"><span class="material-icons">download</span></a> -->
             </div>
-            <div  class="svg" >
-                <svg id="svg" xmlns="http://www.w3.org/2000/svg" width="600" height="600"></svg>
+            <div class="svg">
+                <svg id="svg" xmlns="http://www.w3.org/2000/svg" width="600" height="600">
+                    <rect y="196" width="266" height="205" stroke="#004080" stroke-width="3" fill="#000000" x="140"
+                        id="0"></rect>
+                    <rect y="172" width="212" height="150" stroke="#004080" stroke-width="3" fill="#ff0080" x="55"
+                        id="1"></rect>
+                    <rect y="129" width="230" height="177" stroke="#004080" stroke-width="3" fill="#0080ff" x="235"
+                        id="2"></rect>
+                </svg>
             </div>
             <p id="pos"></p>
         </div>
@@ -68,6 +72,14 @@
                 </div>
             </div>
             <div class="row">
+                <div class="toolbar">
+                    <a href="#" id="layer-up"><span class="material-icons">keyboard_arrow_up</span></a>
+                    <a href="#" id="layer-down"><span class="material-icons">keyboard_arrow_down</span></a>
+                    <a href="#" id="layer-del"><span class="material-icons">delete</span></a>
+                    <a href="#" id="layer-clear"><span class="material-icons">clear</span></a>
+                </div>
+            </div>
+            <div class="row">
                 <select id="layer" size="15" style="width: 100%;">
                 </select>
             </div>
@@ -75,6 +87,7 @@
     </div>
 
 </body>
+<script src="util.js"></script>
 <script src="paint.js"></script>
 
 </html>

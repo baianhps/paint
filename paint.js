@@ -1,21 +1,20 @@
-let cursorX = (e) => e.clientX - bound.left;
-let cursorY = (e) => e.clientY - bound.top;
-
 class Point {
     constructor(x, y) { this.update(x, y) }
     update(x, y) { this.x = x; this.y = y; }
     toString() { return this.x + ' , ' + this.y }
 }
 
-
 let svg = document.querySelector('svg');
 let bound = svg.getBoundingClientRect();
+let cursorX = (e) => e.clientX - bound.left;
+let cursorY = (e) => e.clientY - bound.top;
 let show = document.getElementById('pos');
 let cursorPosition = new Point(0, 0);
 let selected = 'pointer';
 let mouseIsDown = false;
 let mouseDownX, mousedownY;
 let drawing;
+let layer = document.getElementById('layer');
 
 
 function mouseDownHandler(e) {
@@ -48,7 +47,6 @@ function mouseDownHandler(e) {
         drawing.setAttribute("stroke-width", getBorderWidth());
         drawing.setAttribute("fill", getFillColor());
         svg.appendChild(drawing)
-
     } else if (selected === 'circle') {
         drawing = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         drawing.setAttribute("cx", mouseDownX);
@@ -67,7 +65,6 @@ function mouseDownHandler(e) {
         drawing.setAttribute("fill", getFillColor());
         drawing.innerHTML = getTextContent()
         svg.appendChild(drawing)
-
     }
 }
 
@@ -105,23 +102,23 @@ function mouseMoveHandler(e) {
 
 
         }
-
     }
 }
 
 function mouseUpHandler(e) {
     mouseIsDown = false;
-    document.querySelectorAll('#layer>option').forEach(i => {
-        i.remove()
-    });
-    // document.querySelectorAll('line,rect,ellipse,circle,text,image').forEach((i,index) => {
-    document.querySelector('svg').childNodes.forEach((i, index) => {
-        let o = document.createElement('option')
-        o.innerText = i.tagName
-        o.setAttribute('value', index);
-        layer.appendChild(o)
-    });
+    refreshLayerList();
+}
 
+function refreshLayerList() {
+    document.getElementById('layer').clearChildren()
+    for (let i = svg.childElementCount - 1; i >= 0; i--) {
+        let o = document.createElement('option');
+        let t = svg.children[i]
+        o.innerText = t.tagName;
+        o.setAttribute('value', i);
+        layer.appendChild(o)
+    }
 }
 
 function getBorderColor() {
@@ -146,28 +143,87 @@ function getTextSizeString() {
 }
 
 
-window.addEventListener('resize', (e) => {
-    bound = svg.getBoundingClientRect();
-
-})
-
+window.addEventListener('resize', (e) => { bound = svg.getBoundingClientRect(); })
 svg.addEventListener('mousedown', mouseDownHandler);
 svg.addEventListener('mousemove', mouseMoveHandler);
 svg.addEventListener('mouseup', mouseUpHandler);
 
-document.querySelectorAll('.toolbar>a').forEach((element) => {
-    if (element.id === 'image') {
-        // TODO
-        // open image
-    } else {
-        element.addEventListener('click', (event) => {
-            selected = element.id;
-            document.querySelector('.selected').classList.remove('selected');
-            element.classList.add('selected');
-        })
-
-    }
+document.querySelectorAll('#tool-select>a').forEach((element) => {
+    element.addEventListener('click', (event) => {
+        selected = element.id;
+        document.querySelector('.selected').classList.remove('selected');
+        element.classList.add('selected');
+    })
 });
+
+document.getElementById('layer-up').addEventListener('click', (e) => {
+    let layer_selected = Number(layer.value);
+    if (layer_selected < layer.children.length - 1) {
+        svg.children[layer_selected].before(svg.children[layer_selected + 1])
+        refreshLayerList()
+        layer.value = layer_selected + 1
+    }
+})
+document.getElementById('layer-down').addEventListener('click', (e) => {
+    let layer_selected = Number(layer.value);
+    if (layer_selected > 0) {
+        svg.children[layer_selected].after(svg.children[layer_selected - 1])
+        refreshLayerList()
+        layer.value = layer_selected - 1
+    }
+})
+document.getElementById('layer-del').addEventListener('click', (e) => {
+    let layer_selected = Number(layer.value);
+    console.log(svg.children[layer_selected])
+    svg.children[layer_selected].remove();
+    refreshLayerList()
+});
+document.getElementById('layer-clear').addEventListener('click', (e) => {
+    svg.clearChildren()
+    layer.value = svg.children.length
+    refreshLayerList()
+});
+layer.addEventListener('change', (e) => {
+    let text_content_div = document.getElementById('text-content');
+    let text_size_div = document.getElementById('text-size');
+    let no_border_sel = document.getElementById('no-border');
+    let color_border_sel = document.getElementById('color-border');
+    let border_hex_text = document.getElementById('border-hex');
+    let border_picker_button = document.getElementById('border-picker')
+    let border_width_input = document.getElementById('border-width');
+    let no_fill_sel = document.getElementById('no-fill');
+    let color_fill_sel = document.getElementById('color-fill');
+    let fill_hex_text = document.getElementById('fill-hex');
+    let fill_picker_button = document.getElementById('fill-picker');
+    dwaring = svg.children[Number(layer.value)];
+
+    if (dwaring.tagName === 'text') {
+        text_content_div.value = dwaring.innerHTML;
+        text_size_div.value = dwaring.getAttribute('font-size').replace('px', '');
+    } else {
+        text_content_div.value = '';
+        text_size_div.value = '16';
+    }
+    let stroke = dwaring.getAttribute('stroke')
+    if (stroke === 'transparent') { no_border_sel.click(); }
+    else {
+        color_border_sel.click();
+        border_hex_text.innerText = stroke;
+        border_picker_button.value = stroke;
+        border_width_input.value = dwaring.getAttribute('stroke-width')
+    }
+    if (drawing.hasAttribute('fill')) {
+        let fill = dwaring.getAttribute('fill')
+        if (fill === 'transparent') { no_fill_sel.click(); }
+        else {
+            color_fill_sel.click();
+            fill_hex_text.innerText = fill;
+            fill_picker_button.value = fill;
+        }
+    }
+
+})
+
 document.getElementById('border-picker').addEventListener('change', (e) => {
     document.getElementById('border-hex').innerText = e.originalTarget.value.toUpperCase();
 });
